@@ -29,10 +29,15 @@ const SubmitPhotoForm = () => {
     title: '',
     author: ''
   });
+
+  const emailPattern = /^[a-zA-Z0-9.\-_]*@[a-zA-Z0-9.\-_]*\.[a-z]{2,4}$/;
+  const titlePattern = /[a-zA-Z0-9.\-_\s]{1,25}/;
+  const authorPattern = /[a-zA-Z0-9.\-_\s]{1,50}/;
+
   const [error, setError] = useState(null);
 
   const handlePhoto = (files) => {
-    if(files) setPhoto({ ...photo, file: files[0] });
+    if (files) setPhoto({ ...photo, file: files[0] });
     else setPhoto({ ...photo, file: null });
   }
 
@@ -51,14 +56,17 @@ const SubmitPhotoForm = () => {
 
     let error = null;
 
-    if(!photo.file) error = 'You have to select an image';
-    else if(!photo.title.length || !photo.author.length || !photo.email.length) error = `You can't leave title and author fields empty`;
-    else if(photo.title.length > 50) error = `Title can't be longer than 25 characters`;
+    if (!photo.file) error = 'You have to select an image';
+    else if (
+      !titlePattern.test(photo.title)
+      || !authorPattern.test(photo.author)
+      || !emailPattern.test(photo.email)) error = `You can't leave title and author fields empty`;
 
-    if(!error) {
+
+    if (!error) {
       const formData = new FormData();
 
-      for(let key of ['email', 'author', 'title']) {
+      for (let key of ['email', 'author', 'title']) {
         formData.append(key, photo[key])
       }
 
@@ -72,10 +80,10 @@ const SubmitPhotoForm = () => {
 
   return (
     <Form onSubmit={submitForm} className="animated fadeInRight">
-      { (request && request.success) && <Alert className="standard-box" color="success">Your photo has been successfully submitted!</Alert> }
-      { (error) && <Alert className="standard-box" color="danger" toggle={clearError}>{ error }</Alert> }
-      { (request && request.pending) && <Spinner color="primary" className="standard-box d-block mr-auto ml-auto" /> }
-      { (!request || !request.success) &&
+      {(request && request.success) && <Alert className="standard-box" color="success">Your photo has been successfully submitted!</Alert>}
+      {(error) && <Alert className="standard-box" color="danger" toggle={clearError}>{error}</Alert>}
+      {(request && request.pending) && <Spinner color="primary" className="standard-box d-block mr-auto ml-auto" />}
+      {(!request || !request.success) &&
         (
           <Row>
             <Col xs="12" md="6" className="order-2 order-md-1">

@@ -3,7 +3,7 @@ const Voter = require('../models/Voter.model')
 const requestIp = require('request-ip');
 
 /****** SUBMIT PHOTO ********/
-const acceptedExtensions = ['jpg', 'jpeg', 'png', 'gif'] // TODO: rozważ mime type
+const acceptedExtensions = ['jpg', 'jpeg', 'png', 'gif']
 
 exports.add = async (req, res) => {
 
@@ -34,7 +34,7 @@ exports.add = async (req, res) => {
 
     const newPhoto = new Photo({ title, author, email, src: file.name, votes: 0 });
     await newPhoto.save(); // ...save new photo in DB
-    res.json(newPhoto);
+    res.status(201).json(newPhoto);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -75,8 +75,8 @@ exports.vote = async (req, res) => {
     user.votes.push(photoToUpdate._id);
     await user.save();
     photoToUpdate.votes++;
-    photoToUpdate.save();
-    res.send({ message: 'OK' });
+    await photoToUpdate.save();
+    res.status(201).send({ message: 'OK' });
 
   } catch (err) {
     res.status(500).json(err);
